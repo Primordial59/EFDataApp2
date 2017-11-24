@@ -1,12 +1,14 @@
 ﻿
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using EFDataApp2.Models;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using EFDataApp2.Models;
+using EFDataApp2.Infrastructure;
+
 
 namespace EFDataApp2
 {
@@ -52,12 +54,29 @@ namespace EFDataApp2
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IPasswordValidator<MDSUser>,
+            CustomPasswordValidator>();
 
             services.AddDbContext<MDSIdentityDbContext>(options =>
             options.UseSqlServer(
             Configuration["Data:MDSIdentity:ConnectionString"]));
-            services.AddIdentity<MDSUser, IdentityRole>()
-                .AddEntityFrameworkStores<MDSIdentityDbContext>();
+          
+           // Ниже закомментирована установка базовой схема требавоний к паролям (по умолчанию)
+           //  services.AddIdentity<MDSUser, IdentityRole>()
+           //      .AddEntityFrameworkStores<MDSIdentityDbContext>();
+
+            services.AddIdentity<MDSUser, IdentityRole>(opts => {
+
+               // opts.User.RequireUniqueEmail = true;
+                //opts.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyz";
+
+                opts.Password.RequiredLength = 8;
+                opts.Password.RequireNonAlphanumeric = false;
+                opts.Password.RequireLowercase = true;
+                opts.Password.RequireUppercase = true;
+                opts.Password.RequireDigit = false;
+            }).AddEntityFrameworkStores<MDSIdentityDbContext>();
+
 
             services.AddMvc();
         }   

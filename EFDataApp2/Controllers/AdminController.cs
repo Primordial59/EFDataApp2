@@ -38,7 +38,19 @@ namespace EFDataApp2.Controllers
                 {
                     foreach (IdentityError error in result.Errors)
                     {
-                        ModelState.AddModelError("", error.Description);
+
+                        if (error.Description.ToString() == $"Passwords must have at least one lowercase ('a'-'z').")
+                        {
+                            ModelState.AddModelError("", "Пароль должен содержать не менее одного символа в нижнем регистре ('a'-'z').");
+                        }
+                        else  if (error.Description.ToString() == $"Passwords must have at least one uppercase ('A'-'Z').")
+                            {
+                                ModelState.AddModelError("", "Пароль должен содержать не менее одного символа в верхнем регистре ('A'-'Z').");
+                            }
+                        else
+                        { ModelState.AddModelError("", error.Description); }
+
+
                     }
                 }
             }
