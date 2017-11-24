@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using EFDataApp2.Models;
@@ -17,56 +12,72 @@ namespace EFDataApp2
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        // Старая рабочая реализация, необходимая для публикации БД: Identity и mobilesdb
+        //public Startup(IConfiguration configuration)
+        //{
+        //    Configuration = configuration;
+        //}
 
-        public IConfiguration Configuration { get; }
+        // Старая рабочая реализация, необходимая для публикации БД: Identity и mobilesdb
+        // public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        // Старая рабочая реализация, необходимая для публикации БД: Identity и mobilesdb
+        //public void ConfigureServices(IServiceCollection services)
+        //{
+        //    получаем строку подключения из файла конфигурации
+        // string connection = Configuration.GetConnectionString("DefaultConnection");
+        // добавляем контекст MobileContext в качестве сервиса в приложение
+        //  services.AddDbContext<MobileContext>(options =>
+        //      options.UseSqlServer(connection));
+
+        // string connection2 = Configuration.GetConnectionString("ConnectionString");
+        //     options.UseSqlServer(connection));
+
+        // services.AddDbContext<AppIdentityDbContext>(options =>
+        //options.UseSqlServer(Configuration["Data:MDSIdentity:ConnectionString"]));
+
+        //  services.AddIdentity<IdentityUser, IdentityRole>()
+        //    .AddEntityFrameworkStores<AppIdentityDbContext>();
+        //   services.AddMvc();
+        //  }
+        IConfigurationRoot Configuration;
+
+        public Startup(IHostingEnvironment env)
         {
-            // получаем строку подключения из файла конфигурации
-            string connection = Configuration.GetConnectionString("DefaultConnection");
-            // добавляем контекст MobileContext в качестве сервиса в приложение
-          //  services.AddDbContext<MobileContext>(options =>
-          //      options.UseSqlServer(connection));
-
-           // string connection2 = Configuration.GetConnectionString("ConnectionString");
-            services.AddDbContext < AppIdentityDbContext > (options =>
-                options.UseSqlServer(connection));
-
-            // services.AddDbContext<AppIdentityDbContext>(options =>
-            //options.UseSqlServer(Configuration["Data:MDSIdentity:ConnectionString"]));
-
-            services.AddIdentity<IdentityUser, IdentityRole>()
-            .AddEntityFrameworkStores<AppIdentityDbContext>();
-            services.AddMvc();
+            Configuration = new ConfigurationBuilder()
+            .SetBasePath(env.ContentRootPath)
+            .AddJsonFile("appsettings.json").Build();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void ConfigureServices(IServiceCollection services)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseBrowserLink();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
 
+            services.AddDbContext<MDSIdentityDbContext>(options =>
+            options.UseSqlServer(
+            Configuration["Data:MDSIdentity:ConnectionString"]));
+            services.AddIdentity<MDSUser, IdentityRole>()
+                .AddEntityFrameworkStores<MDSIdentityDbContext>();
+
+            services.AddMvc();
+        }   
+    
+        public void Configure(IApplicationBuilder app)
+        {
+
+            app.UseStatusCodePages();
+            app.UseDeveloperExceptionPage();
             app.UseStaticFiles();
+            app.UseBrowserLink();
+            app.UseMvcWithDefaultRoute();
             app.UseIdentity();
 
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
+            //app.UseMvc(routes =>
+            //{
+            //    routes.MapRoute(
+            //        name: "default",
+            //        template: "{controller=Home}/{action=Index}/{id?}");
+            //});
         }
     }
 }
