@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using EFDataApp2.Models;
+using System.Globalization;
 
 namespace EFDataApp2.Controllers
 {
@@ -19,7 +20,17 @@ namespace EFDataApp2.Controllers
             {
                 ["Содержание"] = "Содержание"
             });
+        public string GetCulture(string code = "")
+        {
+            if (!String.IsNullOrEmpty(code))
+            {
+                CultureInfo.CurrentCulture = new CultureInfo(code);
+                CultureInfo.CurrentUICulture = new CultureInfo(code);
+            }
+            return $"CurrentCulture:{CultureInfo.CurrentCulture.Name}, CurrentUICulture:{CultureInfo.CurrentUICulture.Name}";
+        }
 
-      
     }
+    
+
 }

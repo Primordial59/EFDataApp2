@@ -56,6 +56,8 @@ namespace EFDataApp2
         {
             services.AddTransient<IPasswordValidator<MDSUser>,
             CustomPasswordValidator>();
+            services.AddTransient<IUserValidator<MDSUser>,
+            CustomUserValidator>();
 
             services.AddDbContext<MDSIdentityDbContext>(options =>
             options.UseSqlServer(
@@ -67,9 +69,9 @@ namespace EFDataApp2
 
             services.AddIdentity<MDSUser, IdentityRole>(opts => {
 
-               // opts.User.RequireUniqueEmail = true;
-                //opts.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyz";
-
+                opts.User.RequireUniqueEmail = true;
+          //      opts.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyz0123456789";
+                
                 opts.Password.RequiredLength = 8;
                 opts.Password.RequireNonAlphanumeric = false;
                 opts.Password.RequireLowercase = true;

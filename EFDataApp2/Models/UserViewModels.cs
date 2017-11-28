@@ -16,10 +16,13 @@ namespace EFDataApp2.Models
         public string Name { get; set; }
         [Required]
         public string Email { get; set; }
+
+        public string PhoneNumber { get; set; }
+
         [Required]
         [UIHint ("password")]
         public string Password { get; set; }
-        public string PhoneNumber { get; set; }
+      
 
     }
 
