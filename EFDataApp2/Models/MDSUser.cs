@@ -8,4 +8,6 @@ namespace EFDataApp2.Models
         // для базовой установки Identuty доп. члены не требуются
 
     }
+   // public class IdentityRole
+   // { };
 }
